@@ -45,7 +45,7 @@ void interlocked_set_var(volatile void *__dst,
 {
     pthread_mutex_lock(&__mutex);
     memcpy(__dst, __src, __size);
-    pthread_mutex_destroy(&__mutex);
+    pthread_mutex_unlock(&__mutex);
 }
 
 
@@ -76,7 +76,15 @@ int interlocked_cmp(const volatile void *__first,
             break;
         }
     }
-    pthread_mutex_destroy(&__mutex);
+    pthread_mutex_unlock(&__mutex);
     return res;
+}
+
+void *interlocked_function_exec(void *(*func)(void*), void *args)
+{
+    pthread_mutex_lock(&__mutex);
+    void *func_res = func(args);
+    pthread_mutex_unlock(&__mutex);
+    return func_res;
 }
                     

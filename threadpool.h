@@ -13,7 +13,6 @@ typedef void *(*task_callback)(task_args);
 
 typedef struct task
 {
-    struct task *prev_task;
     task_callback callback;
     task_args args;
 
