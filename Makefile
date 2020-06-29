@@ -7,31 +7,43 @@ LD=gcc
 BUILD_DIR=build
 BIN_DIR=bin
 SRC_DIR=src
-
+INCLUDE = src/
 EXEC=$(BIN_DIR)/$(PROJECT)
 
+##MACRO
+DEBUG?=NO_DEBUG
+LOG?=NO_LOG
+ENDI?=__LSB
+
+##SRCS
+
+
+
 SRCS = test.c
-SRCS += $(SRC_DIR)/interlocked.c
 SRCS += $(SRC_DIR)/threadpool.c
 
+##OBJECTS
 OBJECTS=$(addprefix $(BUILD_DIR)/, $(SRCS:.c=.o))
 
-CFLAGS = -std=c11 -w -D__LOG -D__DEBUG -D__LSB -pthread 
+
+CFLAGS = -std=c11 -w -D$(LOG) -D$(DEBUG) -D$(ENDI) -pthread 
+
 LFLAGS = -std=c11 -w -pthread
 
-INCLUDE = src/
 
 all:$(EXEC)
 	@echo Build done: $(EXEC)!
 
 $(EXEC):$(OBJECTS)
 	mkdir -p $(BIN_DIR)
-	$(LD) -I$(INCLUDE) $(LFLAGS) $^ -o $@
+	$(LD) -I$(INCLUDE) $(DEBUG_FLAG) $(LFLAGS) $^ -o $@
 
 $(BUILD_DIR)/%.o: %.c
 	mkdir -p $(dir $@)
-	$(CC) -I$(INCLUDE) $(CFLAGS) -c $< -o $@
+	$(CC) -I$(INCLUDE) $(DEBUG_FLAG) $(CFLAGS) -c $< -o $@
 
+debug:
+	DEBUG_FLAG=-g LOG=__LOG DEBUG=__DEBUG make rebuild
 
 clean: 
 	@rm -rf $(BIN_DIR)
